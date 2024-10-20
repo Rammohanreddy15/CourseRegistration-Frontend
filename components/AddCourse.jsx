@@ -6,7 +6,7 @@ function AddCourse() {
     const [description, setDescription] = useState('');
     const [price, setPrice] = useState('');
     const [imagelink, setImagelink] = useState('');
-
+    const token = localStorage.getItem('token');
     const handleSubmit = async (e) => {
         e.preventDefault();
         const newCourse = { title, description, price, imagelink };
@@ -14,7 +14,7 @@ function AddCourse() {
         try {
             const response = await axios.post('http://localhost:3000/admin/courses', newCourse, {
                 headers: {
-                    authorization: "Bearer YOUR_JWT_TOKEN_HERE"
+                    authorization: `Bearer ${token}`
                 }
             });
             console.log('Course added successfully:', response.data);

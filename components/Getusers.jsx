@@ -1,33 +1,37 @@
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-function Getusers({ userDetails, setUserDetails, setMessage }) {
-    const getUserDetails = async () => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            try {
-                const response = await axios.get(`http://localhost:3000/admin/userdetails`, {
-                    headers: { authorization: `Bearer ${token}` }
-                });
-                console.log(response.data);
-                setUserDetails(response.data);
-            } catch (error) {
-                console.error('Error fetching user details:', error);
-            }
-        } else {
-            setMessage('No token found, please sign in.');
-        }
-    };
+function Getusers({ setUserDetails, setMessage }) {
+    const [userDetails, setUserDetailsLocal] = useState([]); 
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:3000/admin/courses', {
+                    headers: { authorization: `Bearer ${localStorage.getItem('token')}` }
+                });
+                setUserDetails(response.data.courses);
+                setUserDetailsLocal(response.data.courses);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        };
+
+        fetchData();
+    }, [setUserDetails]);
     return (
         <div>
-            <button onClick={getUserDetails}>Get User Details</button>
-            {userDetails && (
-                <div>
-                    <h2>User Details</h2>
-                    <p>Username: {userDetails.username}</p>
-                    <p>Password: {userDetails.password}</p>
-                </div>
-            )}
+            <h1>User List</h1>
+            <ul>
+                {Array.isArray(userDetails) && userDetails.map((user, index) => (
+                    <li key={index}>
+                        <h2>{user.title}</h2>
+                        <p>{user.description}</p>
+                        <p>Price: {user.price}</p>
+                        <img src={user.imagelink} alt={user.title} />
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 }

@@ -9,16 +9,24 @@ function Signup({ setUserDetails, setMessage }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const newUser = { "username": username, "password": password };
+        const newUser = { username, password };
         
         try {
             const response = await axios.post('http://localhost:3000/admin/signup', newUser);
-            if (response.data) {
-                localStorage.setItem('token', response.data);
+            if (response.data.token) {
+                localStorage.setItem('token', response.data.token);
                 setMessage('Signup successful! Token stored.');
-                navigate('/signin');
+                navigate('/userdetails');
             } else {
-                setMessage(response.data.msg);
+                const signinResponse = await axios.post('http://localhost:3000/admin/signin', newUser);
+                if (signinResponse.data.token) {
+                    localStorage.setItem('token', signinResponse.data.token);
+                    setMessage('Signin successful! Token stored.');
+                    setUserDetails(signinResponse.data.userDetails);
+                    navigate('/userdetails');
+                } else {
+                    setMessage('Signin failed.');
+                }
             }
         } catch (error) {
             console.error('Error:', error);
@@ -28,7 +36,7 @@ function Signup({ setUserDetails, setMessage }) {
 
     return (
         <div>
-            <h1>Signup</h1>
+            <h1>Signup/Signin</h1>
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>Username:</label>
@@ -40,7 +48,7 @@ function Signup({ setUserDetails, setMessage }) {
                 </div>
                 <button type="submit">Submit</button>
             </form>
-            {message && <p>{message}</p>}
+            {/* <button onClick={navigate('/addcourse')}>add course</button> */}
         </div>
     );
 }
