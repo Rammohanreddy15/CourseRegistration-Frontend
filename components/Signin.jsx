@@ -1,28 +1,22 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
-function Signup({ setUserDetails, setMessage }) {
+function Signin() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const navigate = useNavigate();
-
+    const [token,setToken]=useState({});
     const handleSubmit = async (e) => {
         e.preventDefault();
         const newUser = { "username": username, "password": password };
-        
         try {
-            const response = await axios.post('http://localhost:3000/admin/signup', newUser);
-            if (response.data) {
-                localStorage.setItem('token', response.data);
-                setMessage('Signup successful! Token stored.');
-                navigate('/signin');
+            const response = await axios.post('http://localhost:3000/admin/signin', newUser);
+            if (response.data.token) {
+                setToken({"token":response.data.token});
             } else {
-                setMessage(response.data.msg);
-            }
+                setToken({"token":"no user found"});          
+            }      
         } catch (error) {
             console.error('Error:', error);
-            setMessage('Error occurred.');
         }
     };
 
@@ -40,9 +34,9 @@ function Signup({ setUserDetails, setMessage }) {
                 </div>
                 <button type="submit">Submit</button>
             </form>
-            {message && <p>{message}</p>}
+            <p>{token}</p>
         </div>
     );
 }
 
-export default Signup;
+export default Signin;
