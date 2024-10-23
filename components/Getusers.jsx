@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-function Getusers({ setUserDetails, setMessage }) {
+function GetUsers({ setUserDetails, setMessage }) {
     const [userDetails, setUserDetailsLocal] = useState([]); 
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -14,26 +16,34 @@ function Getusers({ setUserDetails, setMessage }) {
                 setUserDetailsLocal(response.data.courses);
             } catch (error) {
                 console.error('Error fetching users:', error);
+                setMessage('Error fetching courses.');
             }
         };
 
         fetchData();
     }, [setUserDetails]);
+
+ 
+    const handleAddCourse = () => {
+        navigate('/addcourse');
+    };
+
     return (
         <div>
-            <h1>User List</h1>
+            <h1>User Courses</h1>
             <ul>
-                {Array.isArray(userDetails) && userDetails.map((user, index) => (
+                {Array.isArray(userDetails) && userDetails.map((course, index) => (
                     <li key={index}>
-                        <h2>{user.title}</h2>
-                        <p>{user.description}</p>
-                        <p>Price: {user.price}</p>
-                        <img src={user.imagelink} alt={user.title} />
+                        <h2>{course.title}</h2>
+                        <p>{course.description}</p>
+                        <p>Price: {course.price}</p>
+                        <img src={course.imagelink} alt={course.title} />
                     </li>
                 ))}
             </ul>
+            <button onClick={handleAddCourse}>Add New Course</button>
         </div>
     );
 }
 
-export default Getusers;
+export default GetUsers;

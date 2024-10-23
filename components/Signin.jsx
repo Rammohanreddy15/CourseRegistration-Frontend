@@ -3,34 +3,34 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 
-function SignUp({ setUserDetails, setMessage }) {
+function SignIn({ setUserDetails, setMessage }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const newUser = { username, password };
+        const user = { username, password };
 
         try {
-            const response = await axios.post('http://localhost:3000/admin/signup', newUser);
+            const response = await axios.post('http://localhost:3000/admin/signin', user);
             if (response.data.token) {
                 localStorage.setItem('token', response.data.token);
-                setMessage('Signup successful! Token stored.');
+                setMessage('Signin successful! Token stored.');
                 setUserDetails(response.data.userDetails);
                 navigate('/userdetails'); 
             } else {
-                setMessage('Signup failed. User might already exist.');
+                setMessage('Signin failed. Please check your credentials.');
             }
         } catch (error) {
             console.error('Error:', error);
-            setMessage('Error occurred during signup. Please try again.');
+            setMessage('Error occurred during signin. Please try again.');
         }
     };
 
     return (
         <div>
-            <h1>Sign Up</h1>
+            <h1>Sign In</h1>
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>Username:</label>
@@ -50,11 +50,11 @@ function SignUp({ setUserDetails, setMessage }) {
                         required
                     />
                 </div>
-                <button type="submit">Sign Up</button>
+                <button type="submit">Sign In</button>
             </form>
-            <p>Already have an account? <Link to="/">Sign In</Link></p>
+            <p>Don't have an account? <Link to="/signup">Sign Up</Link></p>
         </div>
     );
 }
 
-export default SignUp;
+export default SignIn;
